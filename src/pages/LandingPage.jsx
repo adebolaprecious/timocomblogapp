@@ -167,7 +167,7 @@ const LandingPage = () => {
 .hero-section {
   min-height: 100vh;
   background: linear-gradient(to right, #ffffff, #f8f9fa);
-  padding: 200px 70px;
+  padding: 0px 70px;
   margin-top: 10px;
   // margin-left: 200px;
   // margin-right: -500px;

@@ -120,7 +120,7 @@ button.btn {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .auth-navbar { padding: 15px 20px; }
-  .brand-left { font-size: 18px; left: 15px; }
+  .brand-left { font-size: 18px; left: 35px; }
   .brand-center h2 { font-size: 24px; }
   .auth-card { padding: 25px 20px; }
   .form-floating input { height: 45px; font-size: 13px; }
@@ -136,4 +136,17 @@ button.btn {
     margin-left: -240px;
 
      padding: 120px 145px; }
+}
+/* ================= MOBILE FIX ONLY ================= */
+@media (max-width: 768px) {
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
 }

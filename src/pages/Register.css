@@ -60,3 +60,48 @@ html, body {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(15px);
 }
+/* ================= MOBILE FIX ONLY ================= */
+@media (max-width: 768px) {
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .auth-wrapper {
+    padding: 10px;
+  }
+
+  .auth-navbar {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .brand-left {
+    position: relative;
+    left: 0;
+    top: 0;
+  }
+
+  .auth-content {
+    width: 100% !important;
+    padding: 10px;
+  }
+
+  .auth-card {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100%;
+    padding: 20px 15px;
+  }
+
+}

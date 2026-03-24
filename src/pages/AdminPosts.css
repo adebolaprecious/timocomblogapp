@@ -137,3 +137,82 @@ body {
     grid-template-columns: 1fr;
   }
 }
+/* ================= MOBILE ONLY FIX ================= */
+@media (max-width: 768px) {
+
+  /* Reset bad global spacing */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Container fix */
+  .admin-container {
+    margin: 0 !important;
+    padding: 20px 12px;
+  }
+
+  /* Title */
+  .dashboard-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* Grid -> single column */
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Card */
+  .admin-card {
+    border-radius: 14px;
+  }
+
+  /* Image */
+  .admin-card img {
+    height: 180px;
+  }
+
+  /* Text */
+  .admin-title {
+    font-size: 16px;
+  }
+
+  .admin-text {
+    font-size: 13px;
+  }
+
+  /* Buttons stack nicely */
+  .admin-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Modal */
+  .modal-box {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    padding: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .admin-card:hover {
+    transform: none; /* avoid weird mobile hover */
+  }
+}

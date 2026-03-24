@@ -1,0 +1,27 @@
+/* ================= MOBILE FIX ONLY ================= */
+@media (max-width: 768px) {
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .profile-page {
+    margin: 0 !important;
+    padding: 20px 10px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+}

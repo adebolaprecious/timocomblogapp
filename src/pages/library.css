@@ -151,3 +151,36 @@
 .remove-btn:hover {
   background: #dc2626;
 }
+
+/* ================= MOBILE FIX ONLY ================= */
+@media (max-width: 768px) {
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .library-page {
+    margin: 0 !important;
+    padding: 20px 10px;
+  }
+
+  .library-container {
+    flex-direction: column;
+  }
+
+  .library-sidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+}
