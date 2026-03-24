@@ -204,7 +204,7 @@ const Home = () => {
                body {
                     margin: 70px;
                     overflow-x: hidden;
-                    margin-left: -280px;
+                    margin-left: -70px;
                 }
                 .timocom-text {
                     font-family: 'Arial Black', sans-serif;
