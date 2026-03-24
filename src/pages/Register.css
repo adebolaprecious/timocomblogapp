@@ -1,0 +1,62 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  margin-left: 400px;
+  margin-top: -50px;
+  overflow-x: hidden;
+}
+
+.auth-wrapper {
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, #198754, #145c32); */
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.auth-navbar {
+  padding: 20px 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-left {
+  position: absolute;
+  left: 20px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.brand-center {
+  text-align: center;
+}
+
+.auth-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  color: black;
+  padding: 35px 25px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+}

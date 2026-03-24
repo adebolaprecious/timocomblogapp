@@ -1,0 +1,158 @@
+import React, { useState } from "react";
+import { useFormik } from 'formik';
+import axios from 'axios';
+import * as Yup from "yup";
+import { useNavigate, Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify'; // Added toast notification
+import 'react-toastify/dist/ReactToastify.css';
+
+const Login = () => {
+    let navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Added loading state
+
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email('Invalid email').required('Email required'),
+            password: Yup.string().min(6, 'Minimum 6 characters').required('Password required')
+        }),
+        onSubmit: async (values) => {
+            setIsLoading(true);
+            try {
+                const response = await axios.post("http://localhost:5009/api/v1/login", values);
+                
+                if (response.data.success) {
+                    localStorage.setItem("token", response.data.token);
+                    toast.success(response.data.message || "Login Successful!");
+                    // Small delay to let user see success message before redirect
+                    setTimeout(() => navigate("/"), 1500);
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                const errorMsg = error.response?.data?.message || "An error occurred during login";
+                toast.error(errorMsg);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    });
+
+    return (
+        <div style={{
+            width: '100%', minHeight: '100vh', backgroundColor: '#f8f9fa',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px'
+        }}>
+            <ToastContainer position="top-right" autoClose={3000} />
+            
+            <div style={{ width: '100%', maxWidth: '480px' }}>
+                {/* Logo Section */}
+                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                    <Link to="/" style={{ textDecoration: 'none' }}>
+                        <h1 style={{ fontSize: '42px', fontWeight: 'bold', color: '#198754', margin: 0 }}>
+                            TimocoMapp
+                        </h1>
+                    </Link>
+                    <p style={{ color: '#6c757d', fontSize: '16px', marginTop: '10px' }}>
+                        Welcome back! Please enter your details
+                    </p>
+                </div>
+
+                <div style={{
+                    backgroundColor: '#ffffff', borderRadius: '20px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.1)', overflow: 'hidden'
+                }}>
+                    <div style={{ backgroundColor: '#198754', padding: '20px 30px' }}>
+                        <h5 style={{ color: '#ffffff', margin: 0, fontSize: '18px', fontWeight: '600' }}>
+                            🔒 Secure Sign In
+                        </h5>
+                    </div>
+
+                    <div style={{ padding: '40px' }}>
+                        <form onSubmit={formik.handleSubmit}>
+                            {/* Email Field */}
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Email Address</label>
+                                <div style={{ display: 'flex' }}>
+                                    <span style={{ backgroundColor: '#e9ecef', padding: '12px', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px' }}>📧</span>
+                                    <input
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        style={inputStyle}
+                                        {...formik.getFieldProps('email')}
+                                    />
+                                </div>
+                                {formik.touched.email && formik.errors.email && <small style={errorStyle}>⚠️ {formik.errors.email}</small>}
+                            </div>
+
+                            {/* Password Field */}
+                            <div style={{ marginBottom: '25px' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Password</label>
+                                <div style={{ display: 'flex', position: 'relative' }}>
+                                    <span style={{ backgroundColor: '#e9ecef', padding: '12px', borderTopLeftRadius: '10px', borderBottomLeftRadius: '10px' }}>🔒</span>
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder="Enter your password"
+                                        style={inputStyle}
+                                        {...formik.getFieldProps('password')}
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        style={togglePasswordStyle}
+                                    >
+                                        {showPassword ? '🙈' : '👁️'}
+                                    </button>
+                                </div>
+                                {formik.touched.password && formik.errors.password && <small style={errorStyle}>⚠️ {formik.errors.password}</small>}
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                style={{
+                                    width: '100%',
+                                    backgroundColor: '#198754',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '14px',
+                                    borderRadius: '10px',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                                    opacity: isLoading ? 0.7 : 1
+                                }}
+                            >
+                                {isLoading ? 'Logging in...' : 'Sign In'}
+                            </button>
+                        </form>
+
+                        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                            <span style={{ color: '#6c757d' }}>Don't have an account? </span>
+                            <Link to="/register" style={{ color: '#198754', fontWeight: 'bold', textDecoration: 'none' }}>Register here</Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Internal styles for cleaner JSX
+const inputStyle = {
+    flex: 1, backgroundColor: '#e9ecef', border: 'none', padding: '12px 15px',
+    borderTopRightRadius: '10px', borderBottomRightRadius: '10px', fontSize: '15px', outline: 'none'
+};
+
+const errorStyle = { color: '#dc3545', fontSize: '12px', marginTop: '5px', display: 'block' };
+
+const togglePasswordStyle = {
+    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+    background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px'
+};
+
+export default Login;

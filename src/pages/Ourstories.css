@@ -1,0 +1,91 @@
+html, body {
+padding: 0%;
+margin-left: -100px;
+}
+/* About TimocomBlog Section Styles */
+.about-timocomblog {
+  background-color: #ffffff;
+}
+
+/* Feature Icons */
+.feature-icon {
+  color: #1a8917;
+  opacity: 0.8;
+}
+
+/* Card hover effects */
+.hover-lift {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient backgrounds for cards */
+.bg-dark {
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
+.bg-success {
+  background: linear-gradient(145deg, #1a8917 0%, #0f6c0d 100%) !important;
+}
+
+.bg-primary {
+  background: linear-gradient(145deg, #1565c0 0%, #0d47a1 100%) !important;
+}
+
+/* Rounded corners */
+.rounded-4 {
+  border-radius: 1.5rem !important;
+}
+
+/* Blockquote styling */
+blockquote {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: #2d2d2d;
+}
+
+/* Stats numbers */
+.display-3 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .display-3 {
+    font-size: 2.5rem;
+  }
+  
+  .about-timocomblog .display-4 {
+    font-size: 2.5rem;
+  }
+  
+  .rounded-4 {
+    border-radius: 1rem !important;
+  }
+}
+
+/* Card content spacing */
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Link styling */
+.about-timocomblog a {
+  color: inherit;
+  transition: opacity 0.2s;
+}
+
+.about-timocomblog a:hover {
+  opacity: 0.9;
+}
+
+/* Subtle border for mission card */
+.border {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}

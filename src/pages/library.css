@@ -1,0 +1,153 @@
+
+.library-page {
+  min-height: 100vh;
+  margin-top: 30px;
+  margin-right: 300px;
+  background: linear-gradient(135deg, #e6f4ea, #f4fbf6);
+  padding: 30px 15px;
+}
+
+
+.library-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.library-header h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #14532d;
+}
+
+.username {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+
+.library-container {
+  display: flex;
+  max-width: 1000px;
+  margin: auto;
+  gap: 30px;
+}
+
+
+.library-sidebar {
+  width: 200px;
+}
+
+.library-nav {
+  display: block;
+  background: none;
+  border: none;
+  padding: 10px 0;
+  font-size: 15px;
+  cursor: pointer;
+  color: #444;
+  transition: 0.3s;
+}
+
+.library-nav.active {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+
+.library-content {
+  flex: 1;
+}
+
+
+.library-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.library-card:hover {
+  transform: translateY(-4px);
+}
+
+
+.library-card-text h5 {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.library-card-text p {
+  font-size: 14px;
+  color: #555;
+}
+
+
+.library-card-img {
+  width: 110px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+
+.response-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.response-card h6 {
+  font-weight: 700;
+}
+
+
+.empty {
+  text-align: center;
+  color: #777;
+  margin-top: 40px;
+}
+
+
+@media (max-width: 768px) {
+  .library-container {
+    flex-direction: column;
+  }
+
+  .library-sidebar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .library-card {
+    flex-direction: column;
+  }
+
+  .library-card-img {
+    width: 100%;
+    height: 160px;
+  }
+}
+.remove-btn {
+  margin-top: 10px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+}
