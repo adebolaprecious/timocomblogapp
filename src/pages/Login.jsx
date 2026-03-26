@@ -48,6 +48,7 @@ const Login = () => {
   });
 
   return (
+    // <div className="page-wrapper">
 <div className="auth-wrapper">      
     <ToastContainer position="top-right" autoClose={3000} />
 
@@ -134,6 +135,9 @@ const Login = () => {
         </div>
       </div>
     </div>
+    
+  
+
   );
 };
 

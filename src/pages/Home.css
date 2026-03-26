@@ -1,38 +1,27 @@
- .offcanvas {
-        transition: transform 0.3s ease-in-out;
-    }
-
-/* ================= MOBILE FIX ONLY ================= */
-@media (max-width: 768px) {
-
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
+/* .home-page {
+    min-height: 100vh;
 }
+
+.offcanvas {
+    transition: transform 0.3s ease-in-out;
+}
+
 @media (max-width: 768px) {
+    .home-page {
+        padding-top: 70px;
+    }
+    .post-card {
+        margin-bottom: 15px;
+    }
+} */
 
-  .home-page {
-    padding: 10px;
-  }
+.home-page {
+    width: 100%;
+    min-height: 100vh;
+}
 
-  .container {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  .post-card {
-    margin-bottom: 15px;
-  }
-
-  .navbar .container {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
+.container, .container-fluid {
+    max-width: 100% !important;
+    padding-left: 15px;
+    padding-right: 15px;
 }

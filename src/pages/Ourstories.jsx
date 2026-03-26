@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 // import "./Ourstories.css";
 const Ourstories = () => {
   return (
+    
+    <div className="page-wrapper">
     <section className="about-timocomblog py-5">
       <div className="container">
         {/* Hero Section */}
@@ -192,9 +194,17 @@ const Ourstories = () => {
   overflow-x: hidden;
   margin-left: -320px;
 }
+  .page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+}
   `}</style>
       </div>
     </section>
+    
+   {/* page content */}
+</div>
   );
 };
 

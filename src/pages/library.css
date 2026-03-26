@@ -1,8 +1,9 @@
-
 .library-page {
   min-height: 100vh;
   margin-top: 30px;
-  margin-right: 300px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 100%;
   background: linear-gradient(135deg, #e6f4ea, #f4fbf6);
   padding: 30px 15px;
 }
@@ -27,11 +28,10 @@
 
 .library-container {
   display: flex;
-  max-width: 1000px;
-  margin: auto;
+    max-width: none;
+  margin: 0px auto;
   gap: 30px;
 }
-
 
 .library-sidebar {
   width: 200px;

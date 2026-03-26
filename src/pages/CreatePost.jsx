@@ -86,7 +86,7 @@ const CreatePost = () => {
       <div className="post-container">
 
         <div className="post-header">
-          <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+          <button className="back-btn-success" onClick={() => navigate(-1)}>←</button>
           <h3>Create Post</h3>
         </div>
 

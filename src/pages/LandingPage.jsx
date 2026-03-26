@@ -26,6 +26,7 @@ const LandingPage = () => {
   }, [user, navigate]);
 
   return (
+  
     <div className="bg-light min-vh-100">
 
       {/* ✅ NAVBAR (Matching HomePage Style) */}
@@ -212,8 +213,10 @@ const LandingPage = () => {
   transform: translateY(-8px);
   transition: 0.3s ease;
 }
+
       `}</style>
     </div>
+   
   );
 };
 
