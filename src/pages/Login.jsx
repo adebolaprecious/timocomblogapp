@@ -1,10 +1,9 @@
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./login.css";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,27 +19,25 @@ const Login = () => {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-
         const res = await axios.post(
           "https://timocombackend.vercel.app/api/v1/users/login",
           values
         );
-        console.log(res.data);
-  if (res.data.success && res.data.token) {
-  localStorage.setItem("token", res.data.token);
-  localStorage.setItem("user", JSON.stringify(res.data.user));
 
-  toast.success("Login successful 🎉");
+        if (res.data.success && res.data.token) {
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
 
-  setTimeout(() => {
-    navigate("/home");
-  }, 1500);
-} else {
-  toast.error("Login failed");
-}
-        
+          toast.success("Login successful 🎉");
+
+          setTimeout(() => {
+            navigate("/home");
+          }, 1200);
+        } else {
+          toast.error("Login failed");
+        }
       } catch (err) {
-        toast.error(err.response?.data?.message || "Login failed");
+        toast.error(err.response?.data?.message || "Invalid email or password");
       } finally {
         setLoading(false);
       }
@@ -48,96 +45,179 @@ const Login = () => {
   });
 
   return (
-    // <div className="page-wrapper">
-<div className="auth-wrapper">      
-    <ToastContainer position="top-right" autoClose={3000} />
+    <>
+      <style>{`
+        html, body, #root {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          height: 100vh !important;
+          overflow: hidden !important;
+        }
 
-      {/* Top Navbar */}
-     <div className="auth-navbar">
-  <div className="brand-left">Timocom</div>
+        .login-page {
+          width: 100%;
+          height: 100vh;
+          background: #f0f7f4;           /* Very light green */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Segoe UI', system-ui, sans-serif;
+        }
 
-  <div className="brand-center">
-    <h2>MyBlog</h2>
-    <p>Share your ideas. Read amazing stories.</p>
-  </div>
-</div>
+        .auth-card {
+          width: 100%;
+          max-width: 420px;
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+          padding: 45px 35px;
+          transition: all 0.3s ease;
+        }
 
-      {/* Centered Card */}
-<div className="auth-content">
-  <div className="auth-card">
-          <div className="card shadow-lg border-0 p-4 rounded-4">
-            <h3 className="text-center mb-4 fw-bold text-success">
-              Welcome Back
-            </h3>
+        .auth-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
 
-            <form onSubmit={formik.handleSubmit}>
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="Email"
-                  {...formik.getFieldProps("email")}
-                />
-                <label htmlFor="email">Email address</label>
-              </div>
+        .brand-logo {
+          width: 70px;
+          height: 70px;
+          background: linear-gradient(135deg, #198754, #146c43);
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 20px;
+          color: white;
+          font-size: 32px;
+          font-weight: bold;
+        }
 
-              <div className="form-floating mb-3 position-relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-control"
-                  id="password"
-                  placeholder="Password"
-                  {...formik.getFieldProps("password")}
-                />
-                <label htmlFor="password">Password</label>
-                <span
-                  className="position-absolute end-0 top-50 translate-middle-y pe-3"
-                  style={{ cursor: "pointer", color: "#198754", fontWeight: 500 }}
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </span>
-              </div>
+        .form-floating input {
+          height: 52px;
+          border-radius: 12px;
+        }
 
-              <div className="form-check mb-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="remember"
-                  {...formik.getFieldProps("remember")}
-                />
-                <label className="form-check-label" htmlFor="remember">
-                  Remember me
-                </label>
-              </div>
+        .password-toggle {
+          position: absolute;
+          right: 20px;
+          top: 50%;
+          transform: translateY(-50%);
+          cursor: pointer;
+          color: #198754;
+          font-weight: 600;
+          font-size: 14px;
+        }
 
-              <button
-                type="submit"
-                className="btn btn-success w-100 btn-lg fw-bold"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="spinner-border spinner-border-sm text-light"></div>
-                ) : (
-                  "Login"
-                )}
-              </button>
-            </form>
+        button.btn-success {
+          height: 52px;
+          font-size: 16px;
+          font-weight: 600;
+          border-radius: 12px;
+        }
 
-            <p className="text-center mt-4 mb-0">
-              Don’t have an account?{" "}
-              <Link to="/register" className="fw-semibold text-success text-decoration-none">
-                Register
-              </Link>
-            </p>
-          </div>
+        .auth-navbar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          padding: 20px 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .timocom-brand {
+          font-family: 'Arial Black', sans-serif;
+          font-size: 24px;
+          font-weight: 900;
+          background: linear-gradient(45deg, #198754, #146c43);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      `}</style>
+
+      <div className="login-page">
+
+        {/* Top Navbar */}
+        <div className="auth-navbar">
+          <div className="timocom-brand">TIMOCOM</div>
         </div>
-      </div>
-    </div>
-    
-  
 
+        {/* Login Card - Centered */}
+        <div className="auth-card">
+          <div className="text-center mb-4">
+            <div className="brand-logo">T</div>
+            <h3 className="fw-bold text-dark mb-2">Welcome Back</h3>
+            <p className="text-muted">Sign in to continue to Timocom</p>
+          </div>
+
+          <form onSubmit={formik.handleSubmit}>
+            <div className="form-floating mb-3">
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                placeholder="Email"
+                {...formik.getFieldProps("email")}
+              />
+              <label htmlFor="email">Email address</label>
+            </div>
+
+            <div className="form-floating mb-4 position-relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                id="password"
+                placeholder="Password"
+                {...formik.getFieldProps("password")}
+              />
+              <label htmlFor="password">Password</label>
+              <span
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </span>
+            </div>
+
+            <div className="form-check mb-4">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="remember"
+                {...formik.getFieldProps("remember")}
+              />
+              <label className="form-check-label" htmlFor="remember">
+                Remember me
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-success w-100 btn-lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="spinner-border spinner-border-sm"></span>
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </form>
+
+          <p className="text-center mt-4 mb-0 text-muted">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-success fw-semibold text-decoration-none">
+              Create one
+            </Link>
+          </p>
+        </div>
+
+        <ToastContainer position="top-right" autoClose={3000} />
+      </div>
+    </>
   );
 };
 
