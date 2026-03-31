@@ -4,8 +4,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AdminPosts = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);           // All posts from API
+  const [filteredPosts, setFilteredPosts] = useState([]); // Posts after search
+  const [searchQuery, setSearchQuery] = useState("");
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedPostForDelete, setSelectedPostForDelete] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [newTitle, setNewTitle] = useState("");
   const [loading, setLoading] = useState(true);
@@ -20,6 +24,7 @@ const AdminPosts = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPosts(data.posts || []);
+      setFilteredPosts(data.posts || []);   // Initialize filtered posts
     } catch (err) {
       toast.error("Failed to load posts");
     } finally {
@@ -27,21 +32,55 @@ const AdminPosts = () => {
     }
   };
 
-  // Delete Post (Fixed API endpoint)
-  const deletePost = async (postId) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+  // Search Handler
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    setSearchQuery(query);
+
+    if (!query) {
+      setFilteredPosts(posts);
+      return;
+    }
+
+    const filtered = posts.filter((post) =>
+      post.postTitle?.toLowerCase().includes(query) ||
+      post.postContent?.toLowerCase().includes(query) ||
+      post.postCategory?.toLowerCase().includes(query)
+    );
+
+    setFilteredPosts(filtered);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredPosts(posts);
+  };
+
+  // Open Delete Confirmation Modal
+  const openDeleteModal = (post) => {
+    setSelectedPostForDelete(post);
+    setDeleteModal(true);
+  };
+
+  // Confirm Delete
+  const confirmDelete = async () => {
+    if (!selectedPostForDelete) return;
 
     try {
       await axios.delete(
-        `https://timocombackend.vercel.app/api/v1/posts/admin/post/${postId}`,
+        `https://timocombackend.vercel.app/api/v1/posts/admin/post/${selectedPostForDelete._id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Post deleted successfully");
       fetchPosts(); // Refresh list
     } catch (err) {
       toast.error("Failed to delete post");
+    } finally {
+      setDeleteModal(false);
+      setSelectedPostForDelete(null);
     }
   };
+
   // Open Edit Modal
   const openEditModal = (post) => {
     setSelectedPost(post);
@@ -71,17 +110,61 @@ const AdminPosts = () => {
     fetchPosts();
   }, []);
 
-  // Calculate stats
+  // Calculate stats (based on original posts, not filtered)
   const totalPosts = posts.length;
   const today = new Date().toISOString().split('T')[0];
   const postsToday = posts.filter(post => 
     post.createdAt?.split('T')[0] === today
   ).length;
 
-  if (loading) {
+  // Full Screen Nice Loading State
+    if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-success" role="status" />
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}>
+        <div style={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+          <div 
+            className="spinner-border text-success" 
+            style={{ 
+              width: '65px', 
+              height: '65px',
+              borderWidth: '6px'
+            }} 
+            role="status"
+          />
+          
+          <h4 style={{ 
+            marginTop: '25px', 
+            marginBottom: '8px',
+            color: '#198754',
+            fontWeight: '600'
+          }}>
+            Fetching all posts on Admin Dashboard....
+          </h4>
+          
+          <p style={{ 
+            color: '#64748b', 
+            margin: 0,
+            fontSize: '15px'
+          }}>
+            Please wait while we fetch all posts....
+          </p>
+        </div>
       </div>
     );
   }
@@ -102,7 +185,6 @@ const AdminPosts = () => {
           background: #f8fafc;
         }
 
-        /* Sticky Header */
         .admin-header {
           position: sticky;
           top: 0;
@@ -112,10 +194,30 @@ const AdminPosts = () => {
           padding: 20px 25px;
         }
 
+        .search-container {
+          margin-top: 15px;
+          position: relative;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 12px 20px 12px 45px;
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          font-size: 15px;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: #198754;
+          box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+        }
+
         .stats-row {
           display: flex;
           gap: 20px;
           flex-wrap: wrap;
+          margin-top: 15px;
         }
 
         .stat-box {
@@ -133,7 +235,6 @@ const AdminPosts = () => {
           color: #198754;
         }
 
-        /* Posts Grid */
         .posts-grid {
           padding: 30px 25px;
           display: grid;
@@ -188,34 +289,33 @@ const AdminPosts = () => {
           cursor: pointer;
         }
 
-        .delete-btn {
-          background: #ef4444;
-          color: white;
-        }
+        .delete-btn { background: #ef4444; color: white; }
+        .edit-btn { background: #3b82f6; color: white; }
 
-        .edit-btn {
-          background: #3b82f6;
-          color: white;
-        }
-
-        /* Modal */
+        /* Modals */
         .modal-overlay {
           position: fixed;
           top: 0; left: 0;
           width: 100%; height: 100%;
-          background: rgba(0,0,0,0.6);
+          background: rgba(0,0,0,0.65);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 2000;
         }
 
-        .modal-box {
+        .modal-box, .delete-modal-box {
           background: white;
           padding: 30px;
           border-radius: 16px;
           width: 90%;
           max-width: 420px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .delete-modal-box {
+          text-align: center;
+          padding: 35px 30px;
         }
 
         @media (max-width: 768px) {
@@ -231,10 +331,34 @@ const AdminPosts = () => {
 
       <div className="admin-page">
 
-        {/* Sticky Header with Stats */}
+        {/* Sticky Header with Stats + Search */}
         <div className="admin-header">
-          <h3 className="dashboard-title">Admin Dashboard</h3>
+          <h3 className="dashboard-title mb-3">Admin Dashboard</h3>
           
+          {/* Search Bar */}
+          <div className="search-container">
+            <i 
+              className="bi bi-search position-absolute" 
+              style={{ left: '18px', top: '14px', color: '#6c757d', fontSize: '18px' }}
+            ></i>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search by title, content or category..."
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+            {searchQuery && (
+              <button 
+                className="btn btn-link position-absolute end-0 top-50 translate-middle-y me-3 text-muted"
+                onClick={clearSearch}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Stats */}
           <div className="stats-row">
             <div className="stat-box">
               <div className="stat-number">{totalPosts}</div>
@@ -249,8 +373,8 @@ const AdminPosts = () => {
 
         {/* Posts Grid */}
         <div className="posts-grid">
-          {posts.length > 0 ? (
-            posts.map((post) => (
+          {filteredPosts.length > 0 ? (
+            filteredPosts.map((post) => (
               <div className="admin-card" key={post._id}>
                 {post.postImage && (
                   <img src={post.postImage} alt={post.postTitle} />
@@ -266,7 +390,10 @@ const AdminPosts = () => {
                     <button className="admin-btn edit-btn" onClick={() => openEditModal(post)}>
                       ✏️ Edit
                     </button>
-                    <button className="admin-btn delete-btn" onClick={() => deletePost(post._id)}>
+                    <button 
+                      className="admin-btn delete-btn" 
+                      onClick={() => openDeleteModal(post)}
+                    >
                       🗑 Delete
                     </button>
                   </div>
@@ -274,7 +401,11 @@ const AdminPosts = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-muted">No posts found</p>
+            <div className="text-center py-5">
+              <i className="bi bi-search fs-1 text-muted mb-3"></i>
+              <h5>No posts found matching your search</h5>
+              <p className="text-muted">Try different keywords</p>
+            </div>
           )}
         </div>
 
@@ -282,19 +413,60 @@ const AdminPosts = () => {
         {editModal && (
           <div className="modal-overlay">
             <div className="modal-box">
-              <h4>Edit Post Title</h4>
+              <h4 className="mb-3">Edit Post Title</h4>
               <input
                 type="text"
-                className="form-control mb-3"
+                className="form-control mb-4"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="Enter new title"
               />
               <div className="d-flex gap-3">
-                <button className="btn btn-secondary w-100" onClick={() => setEditModal(false)}>
+                <button 
+                  className="btn btn-secondary w-100" 
+                  onClick={() => setEditModal(false)}
+                >
                   Cancel
                 </button>
-                <button className="btn btn-success w-100" onClick={updatePost}>
+                <button 
+                  className="btn btn-success w-100" 
+                  onClick={updatePost}
+                >
                   Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteModal && selectedPostForDelete && (
+          <div className="modal-overlay">
+            <div className="delete-modal-box">
+              <div className="mb-4">
+                <i className="bi bi-trash3-fill text-danger" style={{ fontSize: '3.5rem' }}></i>
+              </div>
+              <h4 className="mb-2 text-danger">Delete Post?</h4>
+              <p className="text-muted mb-4">
+                Are you sure you want to delete this post?<br />
+                <strong>"{selectedPostForDelete.postTitle}"</strong><br />
+                This action cannot be undone.
+              </p>
+              <div className="d-flex gap-3">
+                <button 
+                  className="btn btn-secondary w-100 py-2" 
+                  onClick={() => {
+                    setDeleteModal(false);
+                    setSelectedPostForDelete(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="btn btn-danger w-100 py-2" 
+                  onClick={confirmDelete}
+                >
+                  Yes, Delete Post
                 </button>
               </div>
             </div>

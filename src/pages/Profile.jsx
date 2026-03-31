@@ -10,7 +10,7 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showMenu, setShowMenu] = useState(null); // for 3-dot menu
+  const [showMenu, setShowMenu] = useState(null);
 
   const [editForm, setEditForm] = useState({
     firstName: "",
@@ -54,9 +54,8 @@ const Profile = () => {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.post(
-        "https://timocombackend.vercel.app/api/v1/posts/delete/post",
-        { postId },
+      await axios.delete(
+        `https://timocombackend.vercel.app/api/v1/posts/${postId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Post deleted 🗑️");
@@ -69,23 +68,68 @@ const Profile = () => {
 
   const handleEditProfile = async () => {
     try {
-      await axios.put(
-        "https://timocombackend.vercel.app/api/v1/users/update",
+      await axios.patch(
+        `https://timocombackend.vercel.app/api/v1/users/edituser/${user.id}`,
         editForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Profile updated successfully!");
+      toast.success("Profile updated successfully! ✅");
       setShowEditModal(false);
-      fetchProfile(); // refresh data
+      fetchProfile();
     } catch (err) {
-      toast.error("Failed to update profile");
+      toast.error("Failed to update profile ❌");
     }
   };
 
+  // Full Screen Loading State
+    // Full Screen Centered Loading
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-success" role="status" />
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}>
+        <div style={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+          <div 
+            className="spinner-border text-success" 
+            style={{ 
+              width: '65px', 
+              height: '65px',
+              borderWidth: '6px'
+            }} 
+            role="status"
+          />
+          
+          <h4 style={{ 
+            marginTop: '25px', 
+            marginBottom: '8px',
+            color: '#198754',
+            fontWeight: '600'
+          }}>
+            Loading Posts
+          </h4>
+          
+          <p style={{ 
+            color: '#64748b', 
+            margin: 0,
+            fontSize: '15px'
+          }}>
+            Please wait while we fetch all posts...
+          </p>
+        </div>
       </div>
     );
   }
@@ -106,7 +150,36 @@ const Profile = () => {
           background: linear-gradient(135deg, #f8fafc, #f1f5f9);
         }
 
-        /* Sticky Header */
+        /* Full Screen Loading */
+        .loading-fullscreen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+        }
+
+        .loading-content {
+          text-align: center;
+          color: #333;
+        }
+
+        .loading-content h4 {
+          font-weight: 600;
+          color: #198754;
+        }
+
+        .loading-content p {
+          color: #64748b;
+          margin: 0;
+        }
+
+        /* Your existing styles remain the same */
         .profile-header {
           position: sticky;
           top: 0;
@@ -168,7 +241,6 @@ const Profile = () => {
           cursor: pointer;
         }
 
-        /* My Posts Section */
         .my-posts-section {
           padding: 30px 20px;
         }
@@ -217,7 +289,6 @@ const Profile = () => {
           font-size: 14px;
         }
 
-        /* 3-Dot Menu */
         .menu-btn {
           position: absolute;
           top: 15px;
@@ -273,15 +344,11 @@ const Profile = () => {
             text-align: center;
             padding: 20px 15px;
           }
-          .post-grid {
-            grid-template-columns: 1fr;
-          }
         }
       `}</style>
 
       <div className="profile-page">
-
-        {/* Sticky Profile Header */}
+        {/* Profile Header */}
         <div className="profile-header">
           <div className="profile-avatar">
             {user.firstName?.[0]}{user.lastName?.[0]}
@@ -290,6 +357,9 @@ const Profile = () => {
           <div className="profile-info">
             <h2>{user.firstName} {user.lastName}</h2>
             <p>{user.email}</p>
+            
+            {user.bio && <p className="profile-bio">{user.bio}</p>}
+
             <button className="edit-btn" onClick={() => setShowEditModal(true)}>
               Edit Profile
             </button>
@@ -314,14 +384,19 @@ const Profile = () => {
                     <p>{post.postContent?.slice(0, 120)}...</p>
                   </div>
 
-                  {/* 3-Dot Menu */}
-                  <button className="menu-btn" onClick={() => setShowMenu(showMenu === post._id ? null : post._id)}>
+                  <button 
+                    className="menu-btn" 
+                    onClick={() => setShowMenu(showMenu === post._id ? null : post._id)}
+                  >
                     ⋮
                   </button>
 
                   {showMenu === post._id && (
                     <div className="menu-dropdown">
-                      <button className="menu-item" onClick={() => handleDeletePost(post._id)}>
+                      <button 
+                        className="menu-item" 
+                        onClick={() => handleDeletePost(post._id)}
+                      >
                         Delete Post
                       </button>
                     </div>
@@ -368,7 +443,7 @@ const Profile = () => {
             />
             <textarea
               className="form-control mb-3"
-              rows="3"
+              rows="4"
               placeholder="Bio"
               value={editForm.bio}
               onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}

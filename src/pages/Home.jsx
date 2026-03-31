@@ -13,17 +13,12 @@ const Home = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [notifications, setNotifications] = useState([]);
     const [currentUser, setCurrentUser] = useState(null);
-    const [unreadCount, setUnreadCount] = useState(0);
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         setCurrentUser(user);
         fetchPosts();
-        setNotifications([]);
-        setUnreadCount(0);
     }, []);
 
     const fetchPosts = async () => {
@@ -85,9 +80,6 @@ const Home = () => {
                 )
             );
             if (response.data.isLiked) {
-                const newNotification = { id: Date.now(), text: `You liked a post`, time: 'Just now', read: false, type: 'like' };
-                setNotifications(prev => [newNotification, ...prev]);
-                setUnreadCount(prev => prev + 1);
                 toast.success('Post liked!');
             }
         } catch (error) {
@@ -104,9 +96,6 @@ const Home = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (res.data.saved) {
-                const newNotification = { id: Date.now(), text: `Post saved to library`, time: 'Just now', read: false, type: 'save' };
-                setNotifications(prev => [newNotification, ...prev]);
-                setUnreadCount(prev => prev + 1);
                 toast.success('Post saved to library!');
             }
             return res.data.saved;
@@ -126,28 +115,56 @@ const Home = () => {
         setSearchResults([]);
     };
 
-    const markAsRead = (notificationId) => {
-        setNotifications(prev =>
-            prev.map(notif => notif.id === notificationId ? { ...notif, read: true } : notif)
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-    };
-
-    const markAllAsRead = () => {
-        setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
-        setUnreadCount(0);
-        toast.info('All notifications marked as read');
-    };
-
-    if (loading) {
-        return (
-            <div className="d-flex justify-content-center align-items-center min-vh-100">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
-    }
+      if (loading) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}>
+        <div style={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+          <div 
+            className="spinner-border text-success" 
+            style={{ 
+              width: '65px', 
+              height: '65px',
+              borderWidth: '6px'
+            }} 
+            role="status"
+          />
+          
+          <h4 style={{ 
+            marginTop: '25px', 
+            marginBottom: '8px',
+            color: '#198754',
+            fontWeight: '600'
+          }}>
+            Loading Home
+          </h4>
+          
+          <p style={{ 
+            color: '#64748b', 
+            margin: 0,
+            fontSize: '15px'
+          }}>
+            Please wait while we fetch all posts...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
     return (
         <>
@@ -164,15 +181,8 @@ const Home = () => {
                     min-height: 100vh;
                 }
 
-                .navbar {
-                    width: 100% !important;
-                }
-
-                .main-content, .container-fluid, .post-card {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                    margin-left: 0 !important;
-                    margin-right: 0 !important;
+                .main-content {
+                    padding-top: 90px;   /* Adjusted for sticky navbar */
                 }
 
                 .post-card {
@@ -205,13 +215,15 @@ const Home = () => {
                     z-index: 1055 !important;
                 }
 
-                .notification-dropdown {
-                    z-index: 1070 !important;
+                @media (max-width: 768px) {
+                    .main-content {
+                        padding-top: 130px; /* Extra space for mobile navbar + search */
+                    }
                 }
             `}</style>
 
             <div className="home-page">
-                {/* Sticky Navbar */}
+                {/* Sticky Navbar - Stays fixed while scrolling */}
                 <nav className="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
                     <div className="container-fluid px-3 px-lg-4">
                         <div className="d-flex align-items-center gap-3">
@@ -240,38 +252,58 @@ const Home = () => {
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                                 <button type="submit" className="btn position-absolute end-0 top-50 translate-middle-y border-0">
-                                    {isSearching ? <span className="spinner-border spinner-border-sm"></span> : <i className="bi bi-search"></i>}
+                                    {isSearching ? (
+                                        <span className="spinner-border spinner-border-sm"></span>
+                                    ) : (
+                                        <i className="bi bi-search"></i>
+                                    )}
                                 </button>
                             </form>
                         </div>
 
-                        {/* Right Side */}
+                        {/* Right Side - Write + Profile */}
                         <div className="d-flex align-items-center gap-2">
-                            <button className="btn btn-success rounded-pill px-4 d-flex align-items-center gap-2" onClick={() => navigate('/createpost')}>
+                            <button 
+                                className="btn btn-success rounded-pill px-4 d-flex align-items-center gap-2" 
+                                onClick={() => navigate('/createpost')}
+                            >
                                 <i className="bi bi-pencil-square"></i>
                                 <span className="d-none d-sm-inline">Write</span>
                             </button>
-                            <div className="position-relative">
-                                <button className="btn btn-link p-2 text-dark position-relative" onClick={() => setShowNotifications(!showNotifications)}>
-                                    <i className="bi bi-bell fs-5"></i>
-                                    {unreadCount > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge">{unreadCount}</span>}
-                                </button>
-                            </div>
+
+                            {/* Profile Icon - Now routes to Profile Page */}
+                            <button 
+                                className="btn btn-link p-2 text-dark" 
+                                onClick={() => navigate('/profile')}
+                                title="Go to Profile"
+                            >
+                                <i className="bi bi-person-circle fs-4"></i>
+                            </button>
                         </div>
                     </div>
 
                     {/* Mobile Search */}
-                    <div className="container d-md-none mt-2 px-3">
+                    <div className="container d-md-none mt-2 px-3 pb-2">
                         <form onSubmit={handleSearch} className="position-relative">
-                            <input type="text" className="form-control search-box ps-4" placeholder="Search posts..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                            <input 
+                                type="text" 
+                                className="form-control search-box ps-4" 
+                                placeholder="Search posts..." 
+                                value={searchQuery} 
+                                onChange={(e) => setSearchQuery(e.target.value)} 
+                            />
                             <button type="submit" className="btn position-absolute end-0 top-50 translate-middle-y border-0">
-                                <i className="bi bi-search"></i>
+                                {isSearching ? (
+                                    <span className="spinner-border spinner-border-sm"></span>
+                                ) : (
+                                    <i className="bi bi-search"></i>
+                                )}
                             </button>
                         </form>
                     </div>
                 </nav>
 
-                {/* Offcanvas Menu - Fixed */}
+                {/* Offcanvas Menu */}
                 <div className={`offcanvas offcanvas-start ${showOffcanvas ? 'show' : ''}`} style={{ width: '280px', zIndex: 1060 }}>
                     <div className="offcanvas-header border-bottom">
                         <h5 className="timocom-text mb-0">TIMOCOM</h5>
@@ -331,15 +363,17 @@ const Home = () => {
                     </div>
                 </div>
 
-                {/* Backdrop */}
+                {/* Backdrop for Offcanvas */}
                 {showOffcanvas && (
-                    <div className="offcanvas-backdrop fade show position-fixed top-0 start-0 w-100 h-100" 
-                         onClick={() => setShowOffcanvas(false)} 
-                         style={{ zIndex: 1050, backgroundColor: 'rgba(0,0,0,0.5)' }}></div>
+                    <div 
+                        className="offcanvas-backdrop fade show position-fixed top-0 start-0 w-100 h-100" 
+                        onClick={() => setShowOffcanvas(false)} 
+                        style={{ zIndex: 1050, backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    ></div>
                 )}
 
-                {/* Main Content - Full Width Posts */}
-                <div className="main-content pt-4">
+                {/* Main Content */}
+                <div className="main-content">
                     <div className="container-fluid px-3">
                         {searchQuery && searchResults.length > 0 ? (
                             <>
@@ -356,8 +390,6 @@ const Home = () => {
                                         handleLike={handleLike}
                                         handleSavePost={handleSavePost}
                                         currentUser={currentUser}
-                                        setNotifications={setNotifications}
-                                        setUnreadCount={setUnreadCount}
                                     />
                                 ))}
                             </>
@@ -372,8 +404,6 @@ const Home = () => {
                                             handleLike={handleLike}
                                             handleSavePost={handleSavePost}
                                             currentUser={currentUser}
-                                            setNotifications={setNotifications}
-                                            setUnreadCount={setUnreadCount}
                                         />
                                     ))
                                 ) : (
@@ -397,8 +427,8 @@ const Home = () => {
     );
 };
 
-// PostCard Component (your original)
-const PostCard = ({ post, handleLike, handleSavePost, currentUser, setNotifications, setUnreadCount }) => {
+// PostCard Component
+const PostCard = ({ post, handleLike, handleSavePost, currentUser }) => {
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState('');
     const [localComments, setLocalComments] = useState(post.comments || []);
@@ -426,15 +456,6 @@ const PostCard = ({ post, handleLike, handleSavePost, currentUser, setNotificati
                 };
                 setLocalComments([...localComments, newComment]);
                 setCommentText('');
-                const newNotification = {
-                    id: Date.now(),
-                    text: `You commented on "${post.postTitle.slice(0, 30)}..."`,
-                    time: 'Just now',
-                    read: false,
-                    type: 'comment'
-                };
-                setNotifications(prev => [newNotification, ...prev]);
-                setUnreadCount(prev => prev + 1);
                 toast.success('Comment added!');
             }
         } catch (error) {
@@ -447,51 +468,95 @@ const PostCard = ({ post, handleLike, handleSavePost, currentUser, setNotificati
     return (
         <div className="card post-card mb-4 w-100">
             {post.postImage && (
-                <img src={post.postImage} className="card-img-top" alt={post.postTitle} style={{ maxHeight: '400px', objectFit: 'cover' }} />
+                <img 
+                    src={post.postImage} 
+                    className="card-img-top" 
+                    alt={post.postTitle} 
+                    style={{ maxHeight: '400px', objectFit: 'cover' }} 
+                />
             )}
             <div className="card-body">
                 <div className="d-flex align-items-center gap-2 mb-3">
-                    <img src={`https://ui-avatars.com/api/?name=${post.authorName}&background=198754&color=fff&size=32`} alt={post.authorName} className="rounded-circle" width="32" height="32" />
+                    <img 
+                        src={`https://ui-avatars.com/api/?name=${post.authorName}&background=198754&color=fff&size=32`} 
+                        alt={post.authorName} 
+                        className="rounded-circle" 
+                        width="32" 
+                        height="32" 
+                    />
                     <div>
                         <h6 className="mb-0 fw-bold">{post.authorName}</h6>
-                        <small className="text-muted">{new Date(post.createdAt).toLocaleDateString()} • {post.postCategory}</small>
+                        <small className="text-muted">
+                            {new Date(post.createdAt).toLocaleDateString()} • {post.postCategory}
+                        </small>
                     </div>
                 </div>
                 <h5 className="card-title fw-bold mb-2">{post.postTitle}</h5>
                 <p className="card-text text-muted">
                     {expanded ? post.postContent : post.postContent.slice(0, 150)}
                     {post.postContent.length > 150 && (
-                        <span className="text-success ms-2" style={{ cursor: "pointer", fontWeight: "500" }} onClick={() => setExpanded(!expanded)}>
-                            {expanded ? "Show less" : "...Read more"}
+                        <span 
+                            className="text-success ms-2" 
+                            style={{ cursor: "pointer", fontWeight: "500" }} 
+                            onClick={() => setExpanded(!expanded)}
+                        >
+                            {expanded ? " Show less" : "...Read more"}
                         </span>
                     )}
                 </p>
                 <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                     <div className="d-flex gap-2">
-                        <button className={`btn btn-sm ${isLiked ? 'btn-success' : 'btn-outline-success'} rounded-pill px-3`} onClick={() => handleLike(post._id)}>
-                            <i className={`bi ${isLiked ? 'bi-heart-fill' : 'bi-heart'} me-1`}></i> {post.likes?.length || 0}
+                        <button 
+                            className={`btn btn-sm ${isLiked ? 'btn-success' : 'btn-outline-success'} rounded-pill px-3`} 
+                            onClick={() => handleLike(post._id)}
+                        >
+                            <i className={`bi ${isLiked ? 'bi-heart-fill' : 'bi-heart'} me-1`}></i> 
+                            {post.likes?.length || 0}
                         </button>
-                        <button className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setShowComments(!showComments)}>
+                        <button 
+                            className="btn btn-sm btn-outline-secondary rounded-pill px-3" 
+                            onClick={() => setShowComments(!showComments)}
+                        >
                             <i className="bi bi-chat me-1"></i> {localComments.length}
                         </button>
-                        <button className="btn btn-sm btn-outline-secondary rounded-pill px-3"><i className="bi bi-share"></i></button>
-                        <button className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={async () => {
-                            const savedStatus = await handleSavePost(post._id);
-                            setSaved(savedStatus);
-                        }}>
+                        <button className="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                            <i className="bi bi-share"></i>
+                        </button>
+                        <button 
+                            className="btn btn-sm btn-outline-secondary rounded-pill px-3" 
+                            onClick={async () => {
+                                const savedStatus = await handleSavePost(post._id);
+                                setSaved(savedStatus);
+                            }}
+                        >
                             <i className={`bi ${saved ? "bi-bookmark-fill text-success" : "bi-bookmark"}`}></i>
                         </button>
                     </div>
                 </div>
+
                 {showComments && (
                     <div className="mt-3 pt-3 border-top">
                         <div className="d-flex gap-2 mb-3">
-                            <input type="text" className="form-control form-control-sm" placeholder="Add a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)} />
-                            <button className="btn btn-success btn-sm" onClick={handleAddComment}>Comment</button>
+                            <input 
+                                type="text" 
+                                className="form-control form-control-sm" 
+                                placeholder="Add a comment..." 
+                                value={commentText} 
+                                onChange={(e) => setCommentText(e.target.value)} 
+                            />
+                            <button className="btn btn-success btn-sm" onClick={handleAddComment}>
+                                Comment
+                            </button>
                         </div>
                         {localComments.map((comment, idx) => (
                             <div key={idx} className="d-flex gap-2 mb-2">
-                                <img src={`https://ui-avatars.com/api/?name=${comment.userName || 'U'}&background=198754&color=fff&size=24`} alt="user" className="rounded-circle" width="24" height="24" />
+                                <img 
+                                    src={`https://ui-avatars.com/api/?name=${comment.userName || 'U'}&background=198754&color=fff&size=24`} 
+                                    alt="user" 
+                                    className="rounded-circle" 
+                                    width="24" 
+                                    height="24" 
+                                />
                                 <div className="bg-light rounded-3 p-2 flex-grow-1">
                                     <small className="fw-bold d-block">{comment.userName || 'User'}</small>
                                     <small>{comment.comment || comment.text}</small>

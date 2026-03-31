@@ -59,11 +59,52 @@ const Library = () => {
     fetchResponses();
   }, []);
 
-  if (loading) {
+   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border text-success" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+      }}>
+        <div style={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}>
+          <div 
+            className="spinner-border text-success" 
+            style={{ 
+              width: '65px', 
+              height: '65px',
+              borderWidth: '6px'
+            }} 
+            role="status"
+          />
+          
+          <h4 style={{ 
+            marginTop: '25px', 
+            marginBottom: '8px',
+            color: '#198754',
+            fontWeight: '600'
+          }}>
+            Loading Library....
+          </h4>
+          
+          <p style={{ 
+            color: '#64748b', 
+            margin: 0,
+            fontSize: '15px'
+          }}>
+            Please wait while we fetch all posts on Library...
+          </p>
         </div>
       </div>
     );

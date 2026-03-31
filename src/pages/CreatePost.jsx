@@ -11,7 +11,7 @@ const CreatePost = () => {
   const [postTitle, setPostTitle] = useState("");
   const [postContent, setPostContent] = useState("");
   const [postImage, setPostImage] = useState("");
-  const [postCategory, setPostCategory] = useState("general, Technology, sport, political discussion");
+  const [postCategory, setPostCategory] = useState("general");
   const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -19,10 +19,9 @@ const CreatePost = () => {
   const handleContent = (e) => {
     setPostContent(e.target.value);
     e.target.style.height = "auto";
-    e.target.style.height = e.target.scrollHeight + "px";
+    e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
-  // Image Upload
   const handleImage = (file) => {
     if (!file) return;
     const preview = URL.createObjectURL(file);
@@ -78,12 +77,12 @@ const CreatePost = () => {
           padding: 0 !important;
           width: 100% !important;
           height: 100vh !important;
-          overflow-x: hidden !important;
+          overflow: hidden !important;
         }
 
         .create-post-page {
           width: 100%;
-          min-height: 100vh;
+          height: 100vh;
           background: #f8f9fa;
           display: flex;
           align-items: center;
@@ -94,9 +93,13 @@ const CreatePost = () => {
         .post-container {
           width: 100%;
           max-width: 780px;
+          height: 100%;
+          max-height: 92vh;
           background: white;
           border-radius: 16px;
           box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
         }
 
@@ -106,6 +109,7 @@ const CreatePost = () => {
           display: flex;
           align-items: center;
           gap: 15px;
+          flex-shrink: 0;
         }
 
         .back-btn-success {
@@ -117,40 +121,40 @@ const CreatePost = () => {
         }
 
         .post-card {
-          padding: 30px;
+          flex: 1;
+          padding: 25px 30px;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;           /* ← This enables scrolling when needed */
+          gap: 20px;
         }
 
-        /* Fix for Title and Content - Make text always visible */
         .post-title {
           width: 100%;
           border: none;
           font-size: 28px;
           font-weight: 700;
-          margin-bottom: 20px;
           outline: none;
-          color: #1e293b !important;           /* Force dark color */
-          background: transparent !important;
+          color: #1e293b;
+          background: transparent;
         }
 
         .post-content {
           width: 100%;
-          min-height: 320px;
+          min-height: 180px;
           border: none;
           font-size: 17px;
           line-height: 1.7;
           resize: none;
           outline: none;
-          margin-bottom: 30px;
-          color: #1e293b !important;           /* Force dark color */
-          background: transparent !important;
+          color: #1e293b;
+          background: transparent;
         }
 
-        /* Category */
         .category-box {
           display: flex;
           flex-wrap: wrap;
           gap: 10px;
-          margin-bottom: 25px;
         }
 
         .category-btn {
@@ -168,14 +172,13 @@ const CreatePost = () => {
           border-color: #198754;
         }
 
-        /* Image Upload */
         .upload-area {
           border: 2px dashed #ddd;
           border-radius: 12px;
-          padding: 50px 20px;
+          padding: 40px 20px;
           text-align: center;
           cursor: pointer;
-          margin-bottom: 30px;
+          flex-shrink: 0;
         }
 
         .upload-area:hover {
@@ -185,28 +188,31 @@ const CreatePost = () => {
 
         .image-preview-box {
           position: relative;
-          display: inline-block;
+          margin: 15px 0;
         }
 
         .image-preview-box img {
           max-width: 100%;
           border-radius: 12px;
+          max-height: 320px;
+          object-fit: contain;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .remove-img {
           position: absolute;
-          top: -10px;
-          right: -10px;
+          top: -12px;
+          right: -12px;
           background: #ef4444;
           color: white;
           border: none;
-          width: 32px;
-          height: 32px;
+          width: 34px;
+          height: 34px;
           border-radius: 50%;
           cursor: pointer;
+          font-size: 16px;
         }
 
-        /* Publish Button - Left Side */
         .submit-post-btn {
           background: #198754;
           color: white;
@@ -216,7 +222,8 @@ const CreatePost = () => {
           font-weight: 600;
           border-radius: 30px;
           cursor: pointer;
-          float: left;
+          align-self: flex-start;
+          margin-top: 10px;
         }
 
         .submit-post-btn:disabled {
@@ -227,8 +234,7 @@ const CreatePost = () => {
         /* Success Modal */
         .success-modal {
           position: fixed;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
+          inset: 0;
           background: rgba(0,0,0,0.7);
           display: flex;
           align-items: center;
@@ -245,7 +251,7 @@ const CreatePost = () => {
         }
 
         .checkmark {
-          font-size: 60px;
+          font-size: 70px;
           color: #198754;
           margin-bottom: 15px;
         }
@@ -270,6 +276,7 @@ const CreatePost = () => {
             <h3 style={{ margin: 0, fontWeight: 600 }}>Create Post</h3>
           </div>
 
+          {/* Scrollable Form Area */}
           <div className="post-card">
             {/* Category */}
             <div className="category-box">
@@ -284,7 +291,7 @@ const CreatePost = () => {
               ))}
             </div>
 
-            {/* Title - Fixed text color */}
+            {/* Title */}
             <input
               type="text"
               className="post-title"
@@ -293,7 +300,7 @@ const CreatePost = () => {
               onChange={(e) => setPostTitle(e.target.value)}
             />
 
-            {/* Content - Fixed text color */}
+            {/* Content */}
             <textarea
               className="post-content"
               placeholder="Start writing your story..."
@@ -334,7 +341,7 @@ const CreatePost = () => {
               onChange={(e) => handleImage(e.target.files[0])}
             />
 
-            {/* Publish Button - Left Side (Medium Style) */}
+            {/* Publish Button - Always visible at bottom */}
             <button
               className="submit-post-btn"
               onClick={sendPost}
@@ -344,18 +351,18 @@ const CreatePost = () => {
             </button>
           </div>
         </div>
-
-        {/* Success Modal */}
-        {showSuccess && (
-          <div className="success-modal">
-            <div className="success-box">
-              <div className="checkmark">✔</div>
-              <h3>Post Published!</h3>
-              <p>Your story is now live 🎉</p>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Success Modal */}
+      {showSuccess && (
+        <div className="success-modal">
+          <div className="success-box">
+            <div className="checkmark">✔</div>
+            <h3>Post Published!</h3>
+            <p>Your story is now live 🎉</p>
+          </div>
+        </div>
+      )}
 
       <ToastContainer position="top-right" autoClose={2000} />
     </>
