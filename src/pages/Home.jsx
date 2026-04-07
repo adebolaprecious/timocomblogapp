@@ -151,7 +151,7 @@ const Home = () => {
             color: '#198754',
             fontWeight: '600'
           }}>
-            Loading Home
+            Loading posts....
           </h4>
           
           <p style={{ 
